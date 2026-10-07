@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <link rel="stylesheet" href="styles.css?v=diagram4" />
+  <link rel="stylesheet" href="styles.css?v=help1" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to calculator</a>
@@ -57,10 +57,23 @@
           </ol>
 
           <h3>Radial mode</h3>
-          <p>Side-milling / circular engagement. Factor = √((ae/D)·(2−ae/D)) when ae/D &lt; 1, else 1. Light ae thins the chip — raise table feed (Compensate ON) so effective chip thickness matches your desired ipt. Diagram: tool circle with shaded ae wedge.</p>
+          <p>Side-milling / circular engagement. Factor = √((ae/D)·(2−ae/D)) when ae/D &lt; 1, else 1. Light ae thins the chip. Diagram: tool circle with shaded ae wedge.</p>
 
           <h3>Axial mode</h3>
-          <p>Lead / entering angle thinning. Factor = sin(κ) where κ is the lead angle in degrees (90° ≈ 1, 45° ≈ 0.707, 15° high-feed ≈ 0.259, 12° ≈ 0.208). Inputs: Ø (for surface speed), ap (axial DOC), κ (presets or free), ipt, Z, RPM. Diagram: side-view depth + lead-angle geometry. <strong>No Compensate toggle in Axial</strong> — low-κ multipliers can jump feeds 4–5× and risk tools/spindle; thinning math stays visible as info only. You set feed yourself.</p>
+          <p>Lead / entering angle thinning. Factor = sin(κ). Inputs: Ø (for surface speed), ap (axial DOC), κ (presets or free), ipt, Z, RPM. Diagram: side-view depth + lead-angle geometry.</p>
+
+          <h3>Compensate</h3>
+          <p><strong>Radial only.</strong> When ON, the calc multiplies table feed so programmed IPM puts <em>effective</em> chip thickness back to the ipt you typed — light side cuts thin the chip, so you feed faster to keep load. When OFF, you still see the thinning math, but programmed feed stays ipt × RPM × Z.</p>
+          <p><strong>Axial has no Compensate button on purpose.</strong> At small lead angles (like 12°) that jump can be 4–5× and unsafe for tools, spindle, and people. You still see h<sub>eff</sub> and a <strong>theoretical × (info only)</strong> — raise feed yourself after checking machine load and the insert card. Never treat the Axial × as a one-tap program value.</p>
+
+          <h3>Lead / entering angle κ</h3>
+          <p>κ (kappa) is the angle between the cutting edge and the work surface — labeled lead angle or entering angle on insert cards. It sets how steep the insert sits when you’re face-milling or high-feed milling.</p>
+          <ul class="help-steps">
+            <li><strong>90°</strong> — square shoulder; almost no axial thinning (sin ≈ 1).</li>
+            <li><strong>45°</strong> — common lead; factor ≈ 0.707.</li>
+            <li><strong>15°</strong> / <strong>12°</strong> — high-feed face mills (e.g. FFQ4 ≈ 12° from the face). Chip gets much thinner (sin 12° ≈ 0.208), so catalogs list high table feeds — dial those against load yourself; this calc will not auto-jump Axial feed.</li>
+          </ul>
+          <p>Axial factor = sin(κ). Smaller κ → thinner chip → bigger theoretical feed bump. Read your insert card for the real κ; don’t leave a 15° preset on if your tool is 12°.</p>
 
           <h3>Convert + units</h3>
           <p><strong>in | mm</strong> lives in the header and flips every length field and label on the board (×25.4). <strong>Convert</strong> is a violet accordion under Results: SFM↔RPM needs Ø; ipt↔IPM needs Z + RPM. In mm mode it shows <strong>m/min ↔ rpm</strong> and <strong>mm/tooth ↔ mm/min</strong>. Gold stays on DEMO $ only — never next to Convert.</p>
