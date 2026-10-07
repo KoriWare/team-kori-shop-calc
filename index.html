@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="description" content="Team Kori shop tool — Radial Chip Thinning Calculator for CNC machinists. Demo data only." />
+  <meta name="description" content="Team Kori shop tool — Chip Thinning Calculator (Radial / Axial) for CNC machinists. Demo data only." />
   <meta name="theme-color" content="#0a0a0c" />
-  <title>Radial Chip Thinning Calculator · Team Kori</title>
+  <title>Chip Thinning Calculator · Team Kori</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -16,10 +16,16 @@
       <span class="brand-mark" aria-hidden="true"></span>
       <div>
         <p class="brand-kicker">Team Kori · Shop Tools</p>
-        <h1>Radial Chip Thinning Calculator</h1>
+        <h1>Chip Thinning Calculator</h1>
       </div>
     </div>
-    <p class="demo-badge" role="status">DEMO NUMBERS · Not live job data</p>
+    <div class="header-controls">
+      <div class="seg units-seg" role="group" aria-label="Length units">
+        <button type="button" id="units-in" class="seg-btn active" aria-pressed="true">in</button>
+        <button type="button" id="units-mm" class="seg-btn" aria-pressed="false">mm</button>
+      </div>
+      <p class="demo-badge" role="status">DEMO NUMBERS · Not live job data</p>
+    </div>
   </header>
 
   <main id="main" class="layout">
@@ -36,51 +42,82 @@
         <div class="help-body">
           <h3>Quick start</h3>
           <ol class="help-steps">
-            <li>Set tool Ø, ae (or % of D), desired ipt, flutes, and RPM.</li>
-            <li>Read <strong>h<sub>eff</sub></strong>, the feed <strong>multiplier</strong>, and <strong>adjusted IPM</strong> in the big numbers.</li>
-            <li>Turn <strong>Compensate</strong> on for light radial cuts (ae well under half the tool diameter).</li>
-            <li>Tap <strong>Copy adjusted feed</strong> when you like the numbers.</li>
+            <li>Pick <strong>Radial</strong> or <strong>Axial</strong> mode with the top toggle.</li>
+            <li>Set tool Ø, engagement (ae/% or ap + κ), desired chipload, flutes, and RPM.</li>
+            <li>Read <strong>h<sub>eff</sub></strong>, the feed <strong>multiplier</strong>, and <strong>adjusted feed</strong> in the big numbers.</li>
+            <li>Use the <strong>Convert</strong> strip for SFM↔rpm / ipt↔ipm, then tap <strong>Use this…</strong> to push into the calc.</li>
+            <li>Flip <strong>in | mm</strong> anytime — it rewrites the whole board (angles, Z, RPM stay put).</li>
           </ol>
 
-          <h3>How to read the diagram</h3>
-          <p><strong>Engagement diagram.</strong> The circle is your tool. The shaded wedge is radial engagement (ae) — how much of the diameter is in the cut. At light ae the chip gets thinner than the ipt you typed, so table feed has to go up to hold chip load. Thick→thin arrow = that effect. Flip <strong>Compensate</strong> when ae is well under half the tool diameter; the violet badge is your feed multiplier. Big numbers = rpm / ipm / adjusted feed — designed to read on a shop phone.</p>
+          <h3>Radial mode</h3>
+          <p>Side-milling / circular engagement. Factor = √((ae/D)·(2−ae/D)) when ae/D &lt; 1, else 1. Light ae thins the chip — raise table feed (Compensate ON) so effective chip thickness matches your desired ipt. Diagram: tool circle with shaded ae wedge.</p>
+
+          <h3>Axial mode</h3>
+          <p>Lead / entering angle thinning. Factor = sin(κ) where κ is the lead angle in degrees (90° ≈ 1, 45° ≈ 0.707, 15° high-feed ≈ 0.259). Inputs: Ø (for surface speed), ap (axial DOC), κ (presets or free), ipt, Z, RPM. Diagram: side-view depth + lead-angle geometry.</p>
+
+          <h3>Convert + units</h3>
+          <p><strong>Convert</strong> (violet strip): SFM↔RPM needs Ø; ipt↔IPM needs Z + RPM. In mm mode the strip shows <strong>m/min ↔ rpm</strong> and <strong>mm/tooth ↔ mm/min</strong>. <strong>in | mm</strong> flips every length field and label on the board (×25.4). Gold is reserved for DEMO $ only.</p>
 
           <h3>DEMO costs only</h3>
           <p class="help-demo"><strong>DEMO costs only.</strong> Blank $, burden rate, and scrap totals are sample numbers so you can see how scrap burns cash. They are not anyone’s real shop rates. Toggle the panel off if you only want the thinning math.</p>
 
-          <h3>What’s not in v1</h3>
-          <p class="help-later"><strong>What’s not in v1.</strong> This page is the radial chip thinning calculator (and optional DEMO cost panel). A Setup / PM due board and arrive-by timers are planned for a later tab — they’re not missing; they just aren’t shipped yet.</p>
+          <h3>What’s not in this build</h3>
+          <p class="help-later"><strong>What’s not here yet.</strong> Setup / PM due board and arrive-by timers stay parked for a later tab — not missing, just not shipped.</p>
         </div>
       </details>
+    </section>
+
+    <!-- Primary mode: Radial | Axial -->
+    <section class="panel mode-bar" aria-label="Thinning mode">
+      <div class="seg mode-seg" role="group" aria-label="Radial or Axial">
+        <button type="button" id="primary-radial" class="seg-btn active" aria-pressed="true">Radial</button>
+        <button type="button" id="primary-axial" class="seg-btn" aria-pressed="false">Axial</button>
+      </div>
+      <p id="mode-hint" class="mode-hint">Radial · ae engagement chip thinning</p>
     </section>
 
     <!-- Hero diagram + primary outputs -->
     <section class="panel hero" aria-labelledby="diagram-heading">
       <div class="hero-copy">
         <h2 id="diagram-heading">Engagement diagram</h2>
-        <p class="lede">Light radial cuts thin the chip. Raise table feed so effective chip thickness matches what you want.</p>
+        <p id="hero-lede" class="lede">Light radial cuts thin the chip. Raise table feed so effective chip thickness matches what you want.</p>
       </div>
 
       <div class="diagram-wrap" aria-hidden="true">
-        <svg id="engagement-svg" viewBox="0 0 320 280" role="img" aria-label="Tool circle with shaded radial engagement arc">
-          <!-- Tool circle -->
+        <!-- Radial SVG -->
+        <svg id="svg-radial" viewBox="0 0 320 280" role="img" aria-label="Tool circle with shaded radial engagement arc">
           <circle cx="160" cy="140" r="90" class="tool-body" />
           <circle cx="160" cy="140" r="90" class="tool-ring" fill="none" />
-          <!-- Shaded engagement wedge (updated in JS) -->
           <path id="ae-wedge" class="ae-wedge" d="" />
-          <!-- Center cross -->
           <line x1="150" y1="140" x2="170" y2="140" class="center-cross" />
           <line x1="160" y1="130" x2="160" y2="150" class="center-cross" />
-          <!-- Thick → thin chip arrow -->
           <g id="chip-arrow" class="chip-arrow">
             <path d="M 250 80 L 280 100 L 250 120" fill="none" stroke-linecap="round" stroke-linejoin="round" />
             <text x="288" y="96" class="chip-label">thick</text>
             <text x="288" y="118" class="chip-label thin">thin</text>
           </g>
-          <!-- Labels -->
           <text id="label-d" x="160" y="248" text-anchor="middle" class="svg-label">Ø D</text>
           <text id="label-ae" x="160" y="268" text-anchor="middle" class="svg-label ae">ae engagement</text>
         </svg>
+
+        <!-- Axial SVG (side view: cutter + lead angle) -->
+        <svg id="svg-axial" class="hidden" viewBox="0 0 320 280" role="img" aria-label="Side view lead angle and axial depth">
+          <!-- Workpiece top -->
+          <rect x="40" y="160" width="240" height="70" class="axial-work" rx="4" />
+          <!-- Cutter body (vertical) -->
+          <rect id="axial-cutter" x="130" y="40" width="60" height="120" class="tool-body" rx="4" />
+          <rect x="130" y="40" width="60" height="120" class="tool-ring-rect" fill="none" rx="4" />
+          <!-- Lead-angle face (hypotenuse) -->
+          <path id="axial-face" class="ae-wedge" d="" />
+          <!-- ap depth bracket -->
+          <line id="ap-line" x1="210" y1="160" x2="210" y2="160" class="ap-bracket" />
+          <text id="label-ap" x="222" y="150" class="svg-label ae">ap</text>
+          <!-- κ arc label -->
+          <text id="label-kappa" x="100" y="150" text-anchor="middle" class="svg-label">κ</text>
+          <text id="label-d-ax" x="160" y="258" text-anchor="middle" class="svg-label">Ø D · lead κ</text>
+          <text id="label-ax-sub" x="160" y="272" text-anchor="middle" class="svg-label ae">axial thinning</text>
+        </svg>
+
         <div id="mult-badge" class="mult-badge" aria-live="polite">
           <span class="mult-label">Feed ×</span>
           <span id="badge-mult" class="mult-value">1.00</span>
@@ -93,7 +130,7 @@
           <span id="out-mult" class="stat-value accent">—</span>
         </div>
         <div class="stat">
-          <span class="stat-label">Adjusted IPM</span>
+          <span class="stat-label" id="lbl-adj-feed">Adjusted IPM</span>
           <span id="out-adj-ipm" class="stat-value accent">—</span>
         </div>
         <div class="stat">
@@ -101,8 +138,54 @@
           <span id="out-heff" class="stat-value">—</span>
         </div>
         <div class="stat">
-          <span class="stat-label">SFM</span>
+          <span class="stat-label" id="lbl-sfm">SFM</span>
           <span id="out-sfm" class="stat-value">—</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Convert strip -->
+    <section class="panel convert" aria-labelledby="convert-heading">
+      <h2 id="convert-heading">Convert</h2>
+      <p class="convert-lede">Push results into the calc mid-job. Violet = convert · gold stays on DEMO $.</p>
+
+      <div class="convert-grid">
+        <div class="convert-card">
+          <h3 id="conv-speed-title">SFM ↔ RPM</h3>
+          <div class="field-row">
+            <div class="field">
+              <label for="conv-sfm" id="lbl-conv-sfm">SFM</label>
+              <input id="conv-sfm" type="number" inputmode="decimal" min="0" step="1" value="" placeholder="—" />
+            </div>
+            <div class="field">
+              <label for="conv-rpm">RPM</label>
+              <input id="conv-rpm" type="number" inputmode="numeric" min="0" step="1" value="" placeholder="—" />
+            </div>
+          </div>
+          <p class="convert-hint" id="conv-speed-hint">Uses tool Ø above</p>
+          <div class="convert-actions">
+            <button type="button" id="btn-use-rpm" class="btn-convert">Use this RPM</button>
+            <button type="button" id="btn-use-sfm" class="btn-convert ghost">Fill from calc</button>
+          </div>
+        </div>
+
+        <div class="convert-card">
+          <h3 id="conv-feed-title">ipt ↔ IPM</h3>
+          <div class="field-row">
+            <div class="field">
+              <label for="conv-ipt" id="lbl-conv-ipt">ipt</label>
+              <input id="conv-ipt" type="number" inputmode="decimal" min="0" step="0.0001" value="" placeholder="—" />
+            </div>
+            <div class="field">
+              <label for="conv-ipm" id="lbl-conv-ipm">IPM</label>
+              <input id="conv-ipm" type="number" inputmode="decimal" min="0" step="0.1" value="" placeholder="—" />
+            </div>
+          </div>
+          <p class="convert-hint">Uses Z + RPM above</p>
+          <div class="convert-actions">
+            <button type="button" id="btn-use-ipm" class="btn-convert">Use this IPM→ipt</button>
+            <button type="button" id="btn-use-ipt" class="btn-convert ghost">Use this ipt</button>
+          </div>
         </div>
       </div>
     </section>
@@ -112,15 +195,16 @@
       <h2 id="inputs-heading">Cut inputs</h2>
 
       <div class="field">
-        <label for="inp-d">Tool diameter D <span class="unit">(in)</span></label>
+        <label for="inp-d">Tool diameter D <span class="unit" id="unit-d">(in)</span></label>
         <input id="inp-d" type="number" inputmode="decimal" min="0.001" step="0.001" value="0.75" required />
       </div>
 
-      <fieldset class="fieldset">
+      <!-- Radial engagement -->
+      <fieldset class="fieldset" id="block-radial">
         <legend>Radial engagement</legend>
         <div class="seg" role="group" aria-label="Engagement mode">
           <button type="button" id="mode-pct" class="seg-btn active" aria-pressed="true">% of D</button>
-          <button type="button" id="mode-ae" class="seg-btn" aria-pressed="false">ae (in)</button>
+          <button type="button" id="mode-ae" class="seg-btn" aria-pressed="false">ae <span id="ae-unit-btn">(in)</span></button>
         </div>
         <div class="field" id="field-pct">
           <label for="inp-pct">Engagement <span class="unit">(% of D)</span></label>
@@ -130,13 +214,34 @@
           </div>
         </div>
         <div class="field hidden" id="field-ae">
-          <label for="inp-ae">Radial width ae <span class="unit">(in)</span></label>
+          <label for="inp-ae">Radial width ae <span class="unit" id="unit-ae">(in)</span></label>
           <input id="inp-ae" type="number" inputmode="decimal" min="0.001" step="0.001" value="0.525" />
         </div>
       </fieldset>
 
+      <!-- Axial engagement -->
+      <fieldset class="fieldset hidden" id="block-axial">
+        <legend>Axial engagement</legend>
+        <div class="field">
+          <label for="inp-ap">Axial DOC ap <span class="unit" id="unit-ap">(in)</span></label>
+          <input id="inp-ap" type="number" inputmode="decimal" min="0.001" step="0.001" value="0.100" />
+        </div>
+        <div class="field">
+          <label for="inp-kappa">Lead / entering angle κ <span class="unit">(°)</span></label>
+          <div class="kappa-row">
+            <input id="inp-kappa" type="number" inputmode="decimal" min="1" max="90" step="0.1" value="45" />
+            <div class="kappa-presets" role="group" aria-label="κ presets">
+              <button type="button" class="preset-btn" data-kappa="90">90°</button>
+              <button type="button" class="preset-btn active" data-kappa="45">45°</button>
+              <button type="button" class="preset-btn" data-kappa="15">15°</button>
+            </div>
+          </div>
+          <p class="convert-hint">90° ≈ square · 45° · 15° high-feed</p>
+        </div>
+      </fieldset>
+
       <div class="field">
-        <label for="inp-ipt">Desired chipload ipt <span class="unit">(in/tooth)</span></label>
+        <label for="inp-ipt">Desired chipload <span id="lbl-ipt-name">ipt</span> <span class="unit" id="unit-ipt">(in/tooth)</span></label>
         <input id="inp-ipt" type="number" inputmode="decimal" min="0.0001" step="0.0001" value="0.025" required />
       </div>
 
@@ -155,7 +260,7 @@
         <label class="toggle" for="inp-compensate">
           <input id="inp-compensate" type="checkbox" checked />
           <span class="toggle-ui" aria-hidden="true"></span>
-          <span class="toggle-text">Compensate for radial thinning</span>
+          <span class="toggle-text" id="lbl-compensate">Compensate for radial thinning</span>
         </label>
       </div>
 
@@ -172,7 +277,7 @@
       <h2 id="outputs-heading">Results</h2>
       <dl class="result-grid">
         <div>
-          <dt>ae / D</dt>
+          <dt id="dt-ratio">ae / D</dt>
           <dd id="out-ratio">—</dd>
         </div>
         <div>
@@ -188,19 +293,19 @@
           <dd id="out-mult2" class="accent-text">—</dd>
         </div>
         <div>
-          <dt>Adjusted ipt</dt>
+          <dt id="dt-adj-ipt">Adjusted ipt</dt>
           <dd id="out-adj-ipt">—</dd>
         </div>
         <div>
-          <dt>Adjusted IPM</dt>
+          <dt id="dt-adj-ipm">Adjusted IPM</dt>
           <dd id="out-adj-ipm2" class="accent-text">—</dd>
         </div>
         <div>
-          <dt>Uncompensated IPM</dt>
+          <dt id="dt-raw-ipm">Uncompensated IPM</dt>
           <dd id="out-raw-ipm">—</dd>
         </div>
         <div>
-          <dt>SFM</dt>
+          <dt id="dt-sfm">SFM</dt>
           <dd id="out-sfm2">—</dd>
         </div>
       </dl>
