@@ -184,22 +184,28 @@ body {
 #engagement-svg,
 #svg-radial,
 #svg-axial {
-  width: min(100%, 320px);
-  max-width: 100%;
-  height: auto;
-  min-height: 200px;
-  aspect-ratio: 320 / 280;
+  /* iOS Safari: force a real box — unsized SVGs can paint as blank */
+  width: 100%;
+  max-width: 320px;
+  height: 280px;
+  min-height: 280px;
+  flex: 0 0 auto;
   display: block;
   margin-inline: auto;
+  overflow: visible;
+  background: #14141c;
+  border-radius: 12px;
 }
 
+/* Keep fixed min-height on iOS Safari — do not zero it under @supports(aspect-ratio) */
+
 .tool-body {
-  fill: #1e1e2a;
+  fill: #3d3d55;
 }
 
 .tool-ring {
   stroke: var(--violet-hot);
-  stroke-width: 3;
+  stroke-width: 4;
 }
 
 .ae-wedge {

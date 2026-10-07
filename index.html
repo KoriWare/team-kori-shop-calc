@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=diagram3" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to calculator</a>
@@ -92,7 +92,7 @@
 
       <div class="diagram-wrap" aria-hidden="true">
         <!-- Radial SVG -->
-        <svg id="svg-radial" viewBox="0 0 320 280" role="img" aria-label="Tool circle with shaded radial engagement arc">
+        <svg id="svg-radial" width="320" height="280" viewBox="0 0 320 280" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Tool circle with shaded radial engagement arc">
           <circle cx="160" cy="140" r="90" class="tool-body" />
           <circle cx="160" cy="140" r="90" class="tool-ring" fill="none" />
           <path id="ae-wedge" class="ae-wedge" d="" />
@@ -108,7 +108,7 @@
         </svg>
 
         <!-- Axial SVG (side view: cutter + lead angle) -->
-        <svg id="svg-axial" class="hidden" viewBox="0 0 320 280" role="img" aria-label="Side view lead angle and axial depth">
+        <svg id="svg-axial" class="hidden" width="320" height="280" viewBox="0 0 320 280" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Side view lead angle and axial depth">
           <!-- Workpiece top -->
           <rect x="40" y="160" width="240" height="70" class="axial-work" rx="4" />
           <!-- Cutter body (vertical) -->
