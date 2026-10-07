@@ -467,7 +467,7 @@
       : "Axial · lead/entering angle (κ) thinning · no auto-compensate";
     $("hero-lede").textContent = isRadial
       ? "Light radial cuts thin the chip. Raise table feed so effective chip thickness matches what you want."
-      : "Low lead angles thin the chip axially. Math shows how thin — you choose feed. No one-tap Compensate (safety).";
+      : "Lead angle of the insert’s cutting edge relative to the machined face. Low lead angles thin the chip axially. Math shows how thin — you choose feed. No one-tap Compensate (safety).";
     $("diagram-heading").textContent = isRadial ? "Engagement diagram" : "Lead-angle diagram";
     const rowComp = $("row-compensate");
     const axialNote = $("axial-safe-note");
