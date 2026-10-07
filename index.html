@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="Team Kori shop tool — Radial Chip Thinning Calculator for CNC machinists. Demo data only." />
+  <meta name="theme-color" content="#0a0a0c" />
+  <title>Radial Chip Thinning Calculator · Team Kori</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to calculator</a>
+
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <p class="brand-kicker">Team Kori · Shop Tools</p>
+        <h1>Radial Chip Thinning Calculator</h1>
+      </div>
+    </div>
+    <p class="demo-badge" role="status">DEMO NUMBERS · Not live job data</p>
+  </header>
+
+  <main id="main" class="layout">
+    <!-- Hero diagram + primary outputs -->
+    <section class="panel hero" aria-labelledby="diagram-heading">
+      <div class="hero-copy">
+        <h2 id="diagram-heading">Engagement diagram</h2>
+        <p class="lede">Light radial cuts thin the chip. Raise table feed so effective chip thickness matches what you want.</p>
+      </div>
+
+      <div class="diagram-wrap" aria-hidden="true">
+        <svg id="engagement-svg" viewBox="0 0 320 280" role="img" aria-label="Tool circle with shaded radial engagement arc">
+          <!-- Tool circle -->
+          <circle cx="160" cy="140" r="90" class="tool-body" />
+          <circle cx="160" cy="140" r="90" class="tool-ring" fill="none" />
+          <!-- Shaded engagement wedge (updated in JS) -->
+          <path id="ae-wedge" class="ae-wedge" d="" />
+          <!-- Center cross -->
+          <line x1="150" y1="140" x2="170" y2="140" class="center-cross" />
+          <line x1="160" y1="130" x2="160" y2="150" class="center-cross" />
+          <!-- Thick → thin chip arrow -->
+          <g id="chip-arrow" class="chip-arrow">
+            <path d="M 250 80 L 280 100 L 250 120" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+            <text x="288" y="96" class="chip-label">thick</text>
+            <text x="288" y="118" class="chip-label thin">thin</text>
+          </g>
+          <!-- Labels -->
+          <text id="label-d" x="160" y="248" text-anchor="middle" class="svg-label">Ø D</text>
+          <text id="label-ae" x="160" y="268" text-anchor="middle" class="svg-label ae">ae engagement</text>
+        </svg>
+        <div id="mult-badge" class="mult-badge" aria-live="polite">
+          <span class="mult-label">Feed ×</span>
+          <span id="badge-mult" class="mult-value">1.00</span>
+        </div>
+      </div>
+
+      <div class="hero-stats" aria-live="polite">
+        <div class="stat">
+          <span class="stat-label">Feed multiplier</span>
+          <span id="out-mult" class="stat-value accent">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Adjusted IPM</span>
+          <span id="out-adj-ipm" class="stat-value accent">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">h<sub>eff</sub></span>
+          <span id="out-heff" class="stat-value">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">SFM</span>
+          <span id="out-sfm" class="stat-value">—</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Inputs -->
+    <section class="panel inputs" aria-labelledby="inputs-heading">
+      <h2 id="inputs-heading">Cut inputs</h2>
+
+      <div class="field">
+        <label for="inp-d">Tool diameter D <span class="unit">(in)</span></label>
+        <input id="inp-d" type="number" inputmode="decimal" min="0.001" step="0.001" value="0.75" required />
+      </div>
+
+      <fieldset class="fieldset">
+        <legend>Radial engagement</legend>
+        <div class="seg" role="group" aria-label="Engagement mode">
+          <button type="button" id="mode-pct" class="seg-btn active" aria-pressed="true">% of D</button>
+          <button type="button" id="mode-ae" class="seg-btn" aria-pressed="false">ae (in)</button>
+        </div>
+        <div class="field" id="field-pct">
+          <label for="inp-pct">Engagement <span class="unit">(% of D)</span></label>
+          <div class="slider-row">
+            <input id="inp-pct" type="range" min="1" max="100" step="1" value="70" />
+            <input id="inp-pct-num" type="number" inputmode="decimal" min="1" max="100" step="1" value="70" aria-label="Engagement percent number" />
+          </div>
+        </div>
+        <div class="field hidden" id="field-ae">
+          <label for="inp-ae">Radial width ae <span class="unit">(in)</span></label>
+          <input id="inp-ae" type="number" inputmode="decimal" min="0.001" step="0.001" value="0.525" />
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <label for="inp-ipt">Desired chipload ipt <span class="unit">(in/tooth)</span></label>
+        <input id="inp-ipt" type="number" inputmode="decimal" min="0.0001" step="0.0001" value="0.025" required />
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="inp-z">Flutes / inserts Z</label>
+          <input id="inp-z" type="number" inputmode="numeric" min="1" step="1" value="4" required />
+        </div>
+        <div class="field">
+          <label for="inp-rpm">Spindle RPM</label>
+          <input id="inp-rpm" type="number" inputmode="numeric" min="1" step="1" value="2200" required />
+        </div>
+      </div>
+
+      <div class="toggle-row">
+        <label class="toggle" for="inp-compensate">
+          <input id="inp-compensate" type="checkbox" checked />
+          <span class="toggle-ui" aria-hidden="true"></span>
+          <span class="toggle-text">Compensate for radial thinning</span>
+        </label>
+      </div>
+
+      <p id="warn-box" class="warn-box hidden" role="alert"></p>
+
+      <div class="risk-row">
+        <span class="risk-label">Cut risk</span>
+        <span id="risk-chip" class="risk-chip green">OK</span>
+      </div>
+    </section>
+
+    <!-- Detailed outputs -->
+    <section class="panel outputs" aria-labelledby="outputs-heading">
+      <h2 id="outputs-heading">Results</h2>
+      <dl class="result-grid">
+        <div>
+          <dt>ae / D</dt>
+          <dd id="out-ratio">—</dd>
+        </div>
+        <div>
+          <dt>Chip thinning factor</dt>
+          <dd id="out-factor">—</dd>
+        </div>
+        <div>
+          <dt>Effective chip h<sub>eff</sub></dt>
+          <dd id="out-heff2">—</dd>
+        </div>
+        <div>
+          <dt>Feed multiplier</dt>
+          <dd id="out-mult2" class="accent-text">—</dd>
+        </div>
+        <div>
+          <dt>Adjusted ipt</dt>
+          <dd id="out-adj-ipt">—</dd>
+        </div>
+        <div>
+          <dt>Adjusted IPM</dt>
+          <dd id="out-adj-ipm2" class="accent-text">—</dd>
+        </div>
+        <div>
+          <dt>Uncompensated IPM</dt>
+          <dd id="out-raw-ipm">—</dd>
+        </div>
+        <div>
+          <dt>SFM</dt>
+          <dd id="out-sfm2">—</dd>
+        </div>
+      </dl>
+
+      <button type="button" id="btn-copy" class="btn-primary">
+        Copy adjusted feed
+      </button>
+      <p id="copy-status" class="copy-status" aria-live="polite"></p>
+    </section>
+
+    <!-- Cost panel (Stacey) -->
+    <section class="panel cost" aria-labelledby="cost-heading">
+      <button type="button" id="cost-toggle" class="cost-toggle" aria-expanded="false" aria-controls="cost-body">
+        <span>
+          <span class="gold-dot" aria-hidden="true"></span>
+          Scrap / remake cost <span class="soft">(DEMO · Stacey)</span>
+        </span>
+        <span id="cost-chevron" class="chevron" aria-hidden="true">▸</span>
+      </button>
+
+      <div id="cost-body" class="cost-body hidden">
+        <p class="demo-note">Demo defaults only — not Kori’s real job costs. Toggle this panel off for pure thinning math.</p>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="cost-blank">Blank $</label>
+            <input id="cost-blank" type="number" inputmode="decimal" min="0" step="0.01" value="25" />
+          </div>
+          <div class="field">
+            <label for="cost-cycle">Cycle <span class="unit">(min)</span></label>
+            <input id="cost-cycle" type="number" inputmode="decimal" min="0" step="0.1" value="8" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="cost-burden">Burden <span class="unit">($/hr)</span></label>
+            <input id="cost-burden" type="number" inputmode="decimal" min="0" step="1" value="85" />
+          </div>
+          <div class="field">
+            <label for="cost-scrap">Scrap count</label>
+            <input id="cost-scrap" type="number" inputmode="numeric" min="0" step="1" value="1" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="cost-tool">Tool / insert $</label>
+            <input id="cost-tool" type="number" inputmode="decimal" min="0" step="0.01" value="40" />
+          </div>
+          <div class="field">
+            <label for="cost-edges">Est. edges left</label>
+            <input id="cost-edges" type="number" inputmode="numeric" min="0" step="1" value="4" />
+          </div>
+        </div>
+
+        <dl class="cost-results">
+          <div>
+            <dt>Scrap $ (per part)</dt>
+            <dd id="out-scrap-cost" class="gold-text">—</dd>
+          </div>
+          <div>
+            <dt>Remake $ (× scrap count)</dt>
+            <dd id="out-remake-cost" class="gold-text">—</dd>
+          </div>
+          <div>
+            <dt>Tool-life risk</dt>
+            <dd><span id="tool-risk-chip" class="risk-chip green">OK</span></dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Team Kori · Jenny (calc) · Maria (UI) · Stacey (demo $) · Casey (ops later)</p>
+    <p class="fine">Static page · free GitHub Pages friendly · no accounts, no private data</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
