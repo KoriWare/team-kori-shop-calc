@@ -52,8 +52,8 @@
             <li>Pick <strong>Radial</strong> or <strong>Axial</strong> mode with the top toggle.</li>
             <li>Set tool Ø, engagement (ae/% or ap + κ), desired chipload, flutes, and RPM.</li>
             <li>Read <strong>h<sub>eff</sub></strong>, the feed <strong>multiplier</strong>, and <strong>adjusted feed</strong> in the big numbers.</li>
-            <li>Use the <strong>Convert</strong> strip for SFM↔rpm / ipt↔ipm, then tap <strong>Use this…</strong> to push into the calc.</li>
-            <li>Flip <strong>in | mm</strong> anytime — it rewrites the whole board (angles, Z, RPM stay put).</li>
+            <li>Flip <strong>in | mm</strong> in the header anytime — it rewrites the whole board (angles, Z, RPM stay put).</li>
+            <li>Open <strong>Convert</strong> under Results for SFM↔rpm / ipt↔ipm, then tap <strong>Use this…</strong> to push into the calc.</li>
           </ol>
 
           <h3>Radial mode</h3>
@@ -63,7 +63,7 @@
           <p>Lead / entering angle thinning. Factor = sin(κ) where κ is the lead angle in degrees (90° ≈ 1, 45° ≈ 0.707, 15° high-feed ≈ 0.259). Inputs: Ø (for surface speed), ap (axial DOC), κ (presets or free), ipt, Z, RPM. Diagram: side-view depth + lead-angle geometry.</p>
 
           <h3>Convert + units</h3>
-          <p><strong>Convert</strong> (violet strip): SFM↔RPM needs Ø; ipt↔IPM needs Z + RPM. In mm mode the strip shows <strong>m/min ↔ rpm</strong> and <strong>mm/tooth ↔ mm/min</strong>. <strong>in | mm</strong> flips every length field and label on the board (×25.4). Gold is reserved for DEMO $ only.</p>
+          <p><strong>in | mm</strong> lives in the header and flips every length field and label on the board (×25.4). <strong>Convert</strong> is a violet accordion under Results: SFM↔RPM needs Ø; ipt↔IPM needs Z + RPM. In mm mode it shows <strong>m/min ↔ rpm</strong> and <strong>mm/tooth ↔ mm/min</strong>. Gold stays on DEMO $ only — never next to Convert.</p>
 
           <h3>DEMO costs only</h3>
           <p class="help-demo"><strong>DEMO costs only.</strong> Blank $, burden rate, and scrap totals are sample numbers so you can see how scrap burns cash. They are not anyone’s real shop rates. Toggle the panel off if you only want the thinning math.</p>
@@ -147,52 +147,6 @@
         <div class="stat">
           <span class="stat-label" id="lbl-sfm">SFM</span>
           <span id="out-sfm" class="stat-value">—</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Convert strip -->
-    <section class="panel convert" aria-labelledby="convert-heading">
-      <h2 id="convert-heading">Convert</h2>
-      <p class="convert-lede">Push results into the calc mid-job. Violet = convert · gold stays on DEMO $.</p>
-
-      <div class="convert-grid">
-        <div class="convert-card">
-          <h3 id="conv-speed-title">SFM ↔ RPM</h3>
-          <div class="field-row">
-            <div class="field">
-              <label for="conv-sfm" id="lbl-conv-sfm">SFM</label>
-              <input id="conv-sfm" type="number" inputmode="decimal" min="0" step="1" value="" placeholder="—" />
-            </div>
-            <div class="field">
-              <label for="conv-rpm">RPM</label>
-              <input id="conv-rpm" type="number" inputmode="numeric" min="0" step="1" value="" placeholder="—" />
-            </div>
-          </div>
-          <p class="convert-hint" id="conv-speed-hint">Uses tool Ø above</p>
-          <div class="convert-actions">
-            <button type="button" id="btn-use-rpm" class="btn-convert">Use this RPM</button>
-            <button type="button" id="btn-use-sfm" class="btn-convert ghost">Fill from calc</button>
-          </div>
-        </div>
-
-        <div class="convert-card">
-          <h3 id="conv-feed-title">ipt ↔ IPM</h3>
-          <div class="field-row">
-            <div class="field">
-              <label for="conv-ipt" id="lbl-conv-ipt">ipt</label>
-              <input id="conv-ipt" type="number" inputmode="decimal" min="0" step="0.0001" value="" placeholder="—" />
-            </div>
-            <div class="field">
-              <label for="conv-ipm" id="lbl-conv-ipm">IPM</label>
-              <input id="conv-ipm" type="number" inputmode="decimal" min="0" step="0.1" value="" placeholder="—" />
-            </div>
-          </div>
-          <p class="convert-hint">Uses Z + RPM above</p>
-          <div class="convert-actions">
-            <button type="button" id="btn-use-ipm" class="btn-convert">Use this IPM→ipt</button>
-            <button type="button" id="btn-use-ipt" class="btn-convert ghost">Use this ipt</button>
-          </div>
         </div>
       </div>
     </section>
@@ -321,6 +275,62 @@
         Copy adjusted feed
       </button>
       <p id="copy-status" class="copy-status" aria-live="polite"></p>
+    </section>
+
+    <!-- Convert (collapsible, under Results — violet; never next to gold DEMO $) -->
+    <section class="panel convert" aria-labelledby="convert-heading">
+      <button type="button" id="convert-toggle" class="convert-toggle" aria-expanded="false" aria-controls="convert-body">
+        <span>
+          <span class="violet-dot" aria-hidden="true"></span>
+          Convert <span class="soft">(SFM↔rpm · ipt↔ipm)</span>
+        </span>
+        <span id="convert-chevron" class="chevron convert-chevron" aria-hidden="true">▸</span>
+      </button>
+      <h2 id="convert-heading" class="sr-only">Convert</h2>
+
+      <div id="convert-body" class="convert-body hidden">
+        <p class="convert-lede">Push results into the calc mid-job. <strong>in | mm</strong> stays in the header. Violet = convert · gold stays on DEMO $.</p>
+
+        <div class="convert-grid">
+          <div class="convert-card">
+            <h3 id="conv-speed-title">SFM ↔ RPM</h3>
+            <div class="field-row">
+              <div class="field">
+                <label for="conv-sfm" id="lbl-conv-sfm">SFM</label>
+                <input id="conv-sfm" type="number" inputmode="decimal" min="0" step="1" value="" placeholder="—" />
+              </div>
+              <div class="field">
+                <label for="conv-rpm">RPM</label>
+                <input id="conv-rpm" type="number" inputmode="numeric" min="0" step="1" value="" placeholder="—" />
+              </div>
+            </div>
+            <p class="convert-hint" id="conv-speed-hint">Uses tool Ø above</p>
+            <div class="convert-actions">
+              <button type="button" id="btn-use-rpm" class="btn-convert">Use this RPM</button>
+              <button type="button" id="btn-use-sfm" class="btn-convert ghost">Fill from calc</button>
+            </div>
+          </div>
+
+          <div class="convert-card">
+            <h3 id="conv-feed-title">ipt ↔ IPM</h3>
+            <div class="field-row">
+              <div class="field">
+                <label for="conv-ipt" id="lbl-conv-ipt">ipt</label>
+                <input id="conv-ipt" type="number" inputmode="decimal" min="0" step="0.0001" value="" placeholder="—" />
+              </div>
+              <div class="field">
+                <label for="conv-ipm" id="lbl-conv-ipm">IPM</label>
+                <input id="conv-ipm" type="number" inputmode="decimal" min="0" step="0.1" value="" placeholder="—" />
+              </div>
+            </div>
+            <p class="convert-hint">Uses Z + RPM above</p>
+            <div class="convert-actions">
+              <button type="button" id="btn-use-ipm" class="btn-convert">Use this IPM→ipt</button>
+              <button type="button" id="btn-use-ipt" class="btn-convert ghost">Use this ipt</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Cost panel (Stacey) -->

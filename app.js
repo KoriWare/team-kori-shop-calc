@@ -44,6 +44,9 @@
   const costToggle = $("cost-toggle");
   const costBody = $("cost-body");
   const costChevron = $("cost-chevron");
+  const convertToggle = $("convert-toggle");
+  const convertBody = $("convert-body");
+  const convertChevron = $("convert-chevron");
 
   const costBlank = $("cost-blank");
   const costCycle = $("cost-cycle");
@@ -729,6 +732,14 @@
       document.body.removeChild(ta);
     }
     setTimeout(() => { copyStatus.textContent = ""; }, 2500);
+  });
+
+  // Convert accordion (collapsed by default)
+  convertToggle.addEventListener("click", () => {
+    const open = convertBody.classList.contains("hidden");
+    convertBody.classList.toggle("hidden", !open);
+    convertChevron.classList.toggle("open", open);
+    convertToggle.setAttribute("aria-expanded", open ? "true" : "false");
   });
 
   // Cost accordion
