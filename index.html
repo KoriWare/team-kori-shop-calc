@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <link rel="stylesheet" href="styles.css?v=diagram3" />
+  <link rel="stylesheet" href="styles.css?v=diagram4" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to calculator</a>
@@ -60,7 +60,7 @@
           <p>Side-milling / circular engagement. Factor = √((ae/D)·(2−ae/D)) when ae/D &lt; 1, else 1. Light ae thins the chip — raise table feed (Compensate ON) so effective chip thickness matches your desired ipt. Diagram: tool circle with shaded ae wedge.</p>
 
           <h3>Axial mode</h3>
-          <p>Lead / entering angle thinning. Factor = sin(κ) where κ is the lead angle in degrees (90° ≈ 1, 45° ≈ 0.707, 15° high-feed ≈ 0.259). Inputs: Ø (for surface speed), ap (axial DOC), κ (presets or free), ipt, Z, RPM. Diagram: side-view depth + lead-angle geometry.</p>
+          <p>Lead / entering angle thinning. Factor = sin(κ) where κ is the lead angle in degrees (90° ≈ 1, 45° ≈ 0.707, 15° high-feed ≈ 0.259, 12° ≈ 0.208). Inputs: Ø (for surface speed), ap (axial DOC), κ (presets or free), ipt, Z, RPM. Diagram: side-view depth + lead-angle geometry. <strong>No Compensate toggle in Axial</strong> — low-κ multipliers can jump feeds 4–5× and risk tools/spindle; thinning math stays visible as info only. You set feed yourself.</p>
 
           <h3>Convert + units</h3>
           <p><strong>in | mm</strong> lives in the header and flips every length field and label on the board (×25.4). <strong>Convert</strong> is a violet accordion under Results: SFM↔RPM needs Ø; ipt↔IPM needs Z + RPM. In mm mode it shows <strong>m/min ↔ rpm</strong> and <strong>mm/tooth ↔ mm/min</strong>. Gold stays on DEMO $ only — never next to Convert.</p>
@@ -217,13 +217,14 @@
         </div>
       </div>
 
-      <div class="toggle-row">
+      <div class="toggle-row" id="row-compensate">
         <label class="toggle" for="inp-compensate">
           <input id="inp-compensate" type="checkbox" checked />
           <span class="toggle-ui" aria-hidden="true"></span>
           <span class="toggle-text" id="lbl-compensate">Compensate for radial thinning</span>
         </label>
       </div>
+      <p id="axial-safe-note" class="mode-hint hidden" role="note">Axial never auto-bumps feed — theoretical × is info only. Cap IPM yourself.</p>
 
       <p id="warn-box" class="warn-box hidden" role="alert"></p>
 
@@ -250,7 +251,7 @@
           <dd id="out-heff2">—</dd>
         </div>
         <div>
-          <dt>Feed multiplier</dt>
+          <dt id="dt-mult">Feed multiplier</dt>
           <dd id="out-mult2" class="accent-text">—</dd>
         </div>
         <div>

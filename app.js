@@ -156,9 +156,18 @@
     if (primaryMode === "radial") {
       $("dt-ratio").textContent = "ae / D";
       $("lbl-compensate").textContent = "Compensate for radial thinning";
+      $("dt-adj-ipt").textContent = units === "mm" ? "Adjusted fz" : "Adjusted ipt";
+      $("dt-adj-ipm").textContent = "Adjusted " + (units === "mm" ? "mm/min" : "IPM");
+      $("lbl-adj-feed").textContent = "Adjusted " + (units === "mm" ? "mm/min" : "IPM");
+      const dm = $("dt-mult");
+      if (dm) dm.textContent = "Feed multiplier";
     } else {
       $("dt-ratio").textContent = "κ / sin(κ)";
-      $("lbl-compensate").textContent = "Compensate for axial thinning";
+      $("dt-adj-ipt").textContent = units === "mm" ? "Programmed fz" : "Programmed ipt";
+      $("dt-adj-ipm").textContent = "Programmed " + (units === "mm" ? "mm/min" : "IPM");
+      $("lbl-adj-feed").textContent = "Programmed " + (units === "mm" ? "mm/min" : "IPM");
+      const dm = $("dt-mult");
+      if (dm) dm.textContent = "Theoretical × (info)";
     }
   }
 
@@ -245,7 +254,8 @@
     const ipt = num(inpIpt);
     const Z = num(inpZ);
     const rpm = num(inpRpm);
-    const compensate = inpCompensate.checked;
+    // Axial: never auto-compensate (safety — low κ can imply 4–5× feeds)
+    const compensate = primaryMode === "radial" && inpCompensate.checked;
 
     const badD = !(D > 0);
     const badIpt = !(ipt > 0);
@@ -316,11 +326,9 @@
 
       let warn = "";
       if (kappa < 20) {
-        warn = "Low lead angle (high-feed style). Thinning is severe — multiplier is high. Confirm insert rating & rigidity.";
-      } else if (kappa < 45 && compensate) {
-        warn = "Moderate lead angle. Compensated feed is up — watch chip load on the insert.";
-      } else if (!compensate && kappa < 75) {
-        warn = "Axial thinning NOT compensated. Effective chip is thinner than programmed — risk of rubbing / heat.";
+        warn = "Low lead angle (high-feed). Chip is much thinner than ipt (sin κ). Theoretical × is INFO ONLY — Axial never auto-bumps feed. Cap IPM yourself vs insert card / spindle load.";
+      } else if (kappa < 75) {
+        warn = "Axial shows thinning only — no Compensate button. Raise feed yourself if you want thicker chips; watch tool and spindle limits.";
       }
       warnExtra = warn;
     }
@@ -332,7 +340,8 @@
     const rawIpm = ipt * rpm * Z;
     const sfm = surfaceSpeed(D, rpm);
     const displayHeff = compensate ? ipt : heffUncompensated;
-    const displayMult = compensate ? feedMult : 1;
+    // Axial: always show theoretical multiplier for awareness, but feed stays programmed
+    const displayMult = primaryMode === "axial" ? feedMult : (compensate ? feedMult : 1);
 
     if (warnExtra) {
       warnBox.classList.remove("hidden");
@@ -353,12 +362,10 @@
         cutLevel = "yellow"; cutLabel = "Very light";
       }
     } else {
-      if (!compensate && riskRatio < 0.85) {
-        cutLevel = "red"; cutLabel = "Rub risk";
-      } else if (compensate && riskRatio < 0.5) {
-        cutLevel = "yellow"; cutLabel = "Low κ";
-      } else if (riskRatio < 0.3) {
+      if (riskRatio < 0.3) {
         cutLevel = "yellow"; cutLabel = "High-feed";
+      } else if (riskRatio < 0.7) {
+        cutLevel = "yellow"; cutLabel = "Thin chip";
       }
     }
     setRiskChip(riskChip, cutLevel, cutLabel);
@@ -395,9 +402,10 @@
         : "Uncomp: " + fmt(rawIpm, 0) + " " + uFeed() + " (thinning OFF · heff " + fmtIpt(heffUncompensated) + ") | " + fmt(rpm, 0) + " rpm | Ø" + fmt(D, 3) + " | " + aeLabel + " | Radial";
     } else {
       const k = num(inpKappa);
-      lastCopyLine = compensate
-        ? "Adj: " + fmt(adjustedIpm, 0) + " " + uFeed() + " (mult " + fmt(feedMult, 2) + ") | " + fmt(rpm, 0) + " rpm | Ø" + fmt(D, 3) + " | κ " + fmt(k, 0) + "° | Axial"
-        : "Uncomp: " + fmt(rawIpm, 0) + " " + uFeed() + " (thinning OFF · heff " + fmtIpt(heffUncompensated) + ") | " + fmt(rpm, 0) + " rpm | Ø" + fmt(D, 3) + " | κ " + fmt(k, 0) + "° | Axial";
+      lastCopyLine =
+        "Axial: " + fmt(rawIpm, 0) + " " + uFeed() + " programmed · heff " + fmtIpt(heffUncompensated) +
+        " · theo ×" + fmt(feedMult, 2) + " (NOT auto-applied) | " + fmt(rpm, 0) + " rpm | Ø" + fmt(D, 3) +
+        " | κ " + fmt(k, 0) + "°";
     }
 
     calcCost(riskRatio, compensate);
@@ -456,11 +464,15 @@
     svgAxial.classList.toggle("hidden", isRadial);
     $("mode-hint").textContent = isRadial
       ? "Radial · ae engagement chip thinning"
-      : "Axial · lead/entering angle (κ) thinning";
+      : "Axial · lead/entering angle (κ) thinning · no auto-compensate";
     $("hero-lede").textContent = isRadial
       ? "Light radial cuts thin the chip. Raise table feed so effective chip thickness matches what you want."
-      : "Low lead angles thin the chip axially. Raise table feed so effective chip thickness matches what you want.";
+      : "Low lead angles thin the chip axially. Math shows how thin — you choose feed. No one-tap Compensate (safety).";
     $("diagram-heading").textContent = isRadial ? "Engagement diagram" : "Lead-angle diagram";
+    const rowComp = $("row-compensate");
+    const axialNote = $("axial-safe-note");
+    if (rowComp) rowComp.classList.toggle("hidden", !isRadial);
+    if (axialNote) axialNote.classList.toggle("hidden", isRadial);
     updateUnitLabels();
     calc();
   }
