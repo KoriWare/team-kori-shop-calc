@@ -194,48 +194,69 @@
   }
 
   function updateDiagramAxial(kappaDeg, ap) {
-    // Side view: cutter 130–190 x, bottom at y=160 (work surface)
-    // Lead face from bottom-right of cutter sloping at κ from horizontal
-    // κ = angle between cutting edge and work plane (entering/lead)
+    // Side view endmill: tip on work at y=160; cutting edge at κ from work face (horizontal).
+    // 90° = vertical shoulder; small κ = shallow high-feed lean.
     const k = Math.max(1, Math.min(90, kappaDeg || 45));
     const rad = (k * Math.PI) / 180;
     const baseY = 160;
-    const cutterLeft = 130;
-    const cutterRight = 190;
-    const cutterTop = 40;
-    // Face starts at bottom-left of insert zone and rises at angle κ
-    // For square (90°): vertical face. For small κ: shallow ramp.
-    // Draw insert wedge from (cutterRight, baseY) along lead angle into material
-    const faceLen = 70;
-    // Angle from vertical: 90-κ means deviation from square shoulder
-    // Lead κ from work: edge makes κ with XY plane → in side view slope = tan(κ) rise/run? 
-    // Simpler: line from tip going up-left at angle κ from horizontal
-    const tipX = cutterRight;
+    const tipX = 190;
     const tipY = baseY;
+    const faceLen = 72;
+    // Edge from tip up-left at angle κ from horizontal (work face)
     const endX = tipX - faceLen * Math.cos(rad);
     const endY = tipY - faceLen * Math.sin(rad);
+
+    // Insert wedge under the edge (shaded engagement)
     const path = [
       "M " + tipX + " " + tipY,
       "L " + endX + " " + endY,
-      "L " + cutterLeft + " " + endY,
-      "L " + cutterLeft + " " + tipY,
+      "L " + Math.min(endX, 130) + " " + tipY,
       "Z",
     ].join(" ");
     $("axial-face").setAttribute("d", path);
 
-    // ap depth visual — scale a bit for display
+    const edge = $("axial-edge");
+    if (edge) {
+      edge.setAttribute("x1", String(tipX));
+      edge.setAttribute("y1", String(tipY));
+      edge.setAttribute("x2", String(endX));
+      edge.setAttribute("y2", String(endY));
+    }
+
+    // κ arc: small arc from work face (left of tip) toward the cutting edge
+    const arcR = 36;
+    const arc = $("kappa-arc");
+    if (arc) {
+      const a0x = tipX - arcR;
+      const a0y = tipY;
+      const a1x = tipX - arcR * Math.cos(rad);
+      const a1y = tipY - arcR * Math.sin(rad);
+      const large = k > 180 ? 1 : 0;
+      arc.setAttribute(
+        "d",
+        "M " + a0x + " " + a0y + " A " + arcR + " " + arcR + " 0 " + large + " 0 " + a1x + " " + a1y
+      );
+    }
+
+    // Label κ near the arc
+    const midA = rad / 2;
+    const lx = tipX - (arcR + 14) * Math.cos(midA);
+    const ly = tipY - (arcR + 14) * Math.sin(midA);
+    $("label-kappa").setAttribute("x", String(lx));
+    $("label-kappa").setAttribute("y", String(ly));
+    $("label-kappa").textContent = "κ " + fmt(k, 0) + "°";
+
+    // ap depth visual
     const apPx = Math.min(55, Math.max(8, (Number.isFinite(ap) ? ap : 0.1) * (units === "mm" ? 1.2 : 30)));
     const apBottom = baseY + apPx;
     $("ap-line").setAttribute("y1", String(baseY));
     $("ap-line").setAttribute("y2", String(apBottom));
     $("ap-line").setAttribute("x1", "210");
     $("ap-line").setAttribute("x2", "210");
-    // depth fill hint
     $("label-ap").setAttribute("y", String((baseY + apBottom) / 2 + 4));
     $("label-ap").textContent = "ap " + fmt(ap, units === "mm" ? 2 : 3) + " " + uLen();
-    $("label-kappa").textContent = "κ " + fmt(k, 0) + "°";
     $("label-d-ax").textContent = "Ø " + fmt(num(inpD), 3) + " " + uLen() + " · sin(κ)=" + fmt(axialFactor(k), 3);
-    $("label-ax-sub").textContent = "axial thinning · lead angle";
+    $("label-ax-sub").textContent = "endmill · lead edge tracks κ";
   }
 
   function setRiskChip(el, level, label) {

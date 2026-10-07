@@ -1065,3 +1065,20 @@ input[type="range"]::-moz-range-thumb {
   background: var(--violet-hot);
   border-color: var(--violet-hot);
 }
+
+/* Axial endmill diagram */
+.flute-line {
+  stroke: rgba(180, 160, 220, 0.45);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+.lead-edge {
+  stroke: #f0c14a;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.kappa-arc {
+  stroke: #7ee0c8;
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+}

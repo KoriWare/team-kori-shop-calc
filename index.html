@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <link rel="stylesheet" href="styles.css?v=help2" />
+  <link rel="stylesheet" href="styles.css?v=endmill1" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to calculator</a>
@@ -122,19 +122,29 @@
           <text id="label-ae" x="160" y="268" text-anchor="middle" class="svg-label ae">ae engagement</text>
         </svg>
 
-        <!-- Axial SVG (side view: cutter + lead angle) -->
-        <svg id="svg-axial" class="hidden" width="320" height="280" viewBox="0 0 320 280" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Side view lead angle and axial depth">
-          <!-- Workpiece top -->
+        <!-- Axial SVG (side view: endmill + live lead angle) -->
+        <svg id="svg-axial" class="hidden" width="320" height="280" viewBox="0 0 320 280" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Endmill side view — lead angle tracks κ input">
+          <!-- Workpiece -->
           <rect x="40" y="160" width="240" height="70" class="axial-work" rx="4" />
-          <!-- Cutter body (vertical) -->
-          <rect id="axial-cutter" x="130" y="40" width="60" height="120" class="tool-body" rx="4" />
-          <rect x="130" y="40" width="60" height="120" class="tool-ring-rect" fill="none" rx="4" />
-          <!-- Lead-angle face (hypotenuse) -->
+          <!-- Endmill: shank + body + flutes (static silhouette) -->
+          <g id="axial-endmill" class="axial-endmill">
+            <rect id="axial-shank" x="148" y="28" width="24" height="36" class="tool-body" rx="3" />
+            <rect id="axial-cutter" x="130" y="60" width="60" height="100" class="tool-body" rx="6" />
+            <rect x="130" y="60" width="60" height="100" class="tool-ring-rect" fill="none" rx="6" />
+            <!-- Flute suggestion lines -->
+            <line x1="142" y1="70" x2="142" y2="150" class="flute-line" />
+            <line x1="160" y1="70" x2="160" y2="150" class="flute-line" />
+            <line x1="178" y1="70" x2="178" y2="150" class="flute-line" />
+          </g>
+          <!-- Lead-angle insert wedge (updates with κ) -->
           <path id="axial-face" class="ae-wedge" d="" />
+          <!-- Cutting edge line (updates with κ) -->
+          <line id="axial-edge" class="lead-edge" x1="190" y1="160" x2="140" y2="120" />
+          <!-- κ arc between work face and cutting edge -->
+          <path id="kappa-arc" class="kappa-arc" d="" fill="none" />
           <!-- ap depth bracket -->
           <line id="ap-line" x1="210" y1="160" x2="210" y2="160" class="ap-bracket" />
           <text id="label-ap" x="222" y="150" class="svg-label ae">ap</text>
-          <!-- κ arc label -->
           <text id="label-kappa" x="100" y="150" text-anchor="middle" class="svg-label">κ</text>
           <text id="label-d-ax" x="160" y="258" text-anchor="middle" class="svg-label">Ø D · lead κ</text>
           <text id="label-ax-sub" x="160" y="272" text-anchor="middle" class="svg-label ae">axial thinning</text>
@@ -416,6 +426,6 @@
     <p class="fine">Static page · free GitHub Pages friendly · no accounts, no private data</p>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=endmill1"></script>
 </body>
 </html>
