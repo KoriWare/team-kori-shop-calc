@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <link rel="stylesheet" href="styles.css?v=help1" />
+  <link rel="stylesheet" href="styles.css?v=help2" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to calculator</a>
@@ -67,13 +67,15 @@
           <p><strong>Axial has no Compensate button on purpose.</strong> At small lead angles (like 12°) that jump can be 4–5× and unsafe for tools, spindle, and people. You still see h<sub>eff</sub> and a <strong>theoretical × (info only)</strong> — raise feed yourself after checking machine load and the insert card. Never treat the Axial × as a one-tap program value.</p>
 
           <h3>Lead / entering angle κ</h3>
-          <p>κ (kappa) is the angle between the cutting edge and the work surface — labeled lead angle or entering angle on insert cards. It sets how steep the insert sits when you’re face-milling or high-feed milling.</p>
+          <p class="help-demo"><strong>What to type into κ.</strong> Open the insert or cutter catalog (or the box). Find one number labeled <strong>lead angle</strong>, <strong>entering angle</strong>, <strong>approach angle</strong>, or <strong>κ / κr</strong> — how many degrees the cutting edge leans off the machined face. Type that number into κ. Example: FFQ4 high-feed ≈ <strong>12°</strong>.</p>
+          <p><strong>What it is (picture it).</strong> Look at the tool from the side, like the diagram. The work is flat. The insert’s cutting edge either stands tall or lays flatter on that face. κ is that lean, in degrees — not how deep you cut, not how wide sideways.</p>
           <ul class="help-steps">
-            <li><strong>90°</strong> — square shoulder; almost no axial thinning (sin ≈ 1).</li>
-            <li><strong>45°</strong> — common lead; factor ≈ 0.707.</li>
-            <li><strong>15°</strong> / <strong>12°</strong> — high-feed face mills (e.g. FFQ4 ≈ 12° from the face). Chip gets much thinner (sin 12° ≈ 0.208), so catalogs list high table feeds — dial those against load yourself; this calc will not auto-jump Axial feed.</li>
+            <li><strong>90°</strong> — edge stands square to the face (shoulder mill). Almost no axial thinning.</li>
+            <li><strong>45°</strong> — common mid lean. Factor ≈ 0.707.</li>
+            <li><strong>15° or 12°</strong> — high-feed: edge lays nearly flat on the face. Chip gets much thinner (sin 12° ≈ 0.208). Catalogs list high table feeds — you raise feed yourself against spindle load; Axial will not auto-jump feed.</li>
           </ul>
-          <p>Axial factor = sin(κ). Smaller κ → thinner chip → bigger theoretical feed bump. Read your insert card for the real κ; don’t leave a 15° preset on if your tool is 12°.</p>
+          <p><strong>Do not type these into κ:</strong> ap (depth of cut), ae (side engagement), rake, clearance, or a “chip thinning factor” from CAM. Those are different fields. κ is only the lean angle from the insert card.</p>
+          <p>Math: Axial factor = sin(κ). Smaller κ → thinner chip → bigger theoretical × (shown as info only). Match the preset to your real card — don’t leave 15° on if your tool is 12°.</p>
 
           <h3>Convert + units</h3>
           <p><strong>in | mm</strong> lives in the header and flips every length field and label on the board (×25.4). <strong>Convert</strong> is a violet accordion under Results: SFM↔RPM needs Ø; ipt↔IPM needs Z + RPM. In mm mode it shows <strong>m/min ↔ rpm</strong> and <strong>mm/tooth ↔ mm/min</strong>. Gold stays on DEMO $ only — never next to Convert.</p>
