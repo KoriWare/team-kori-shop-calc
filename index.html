@@ -23,6 +23,37 @@
   </header>
 
   <main id="main" class="layout">
+    <!-- Help (collapsible) -->
+    <section class="panel help" aria-labelledby="help-heading">
+      <details class="help-details">
+        <summary id="help-heading">
+          <span class="help-summary-inner">
+            <span class="help-mark" aria-hidden="true">?</span>
+            Help · How to use this calculator
+          </span>
+          <span class="help-chevron" aria-hidden="true">▸</span>
+        </summary>
+        <div class="help-body">
+          <h3>Quick start</h3>
+          <ol class="help-steps">
+            <li>Set tool Ø, ae (or % of D), desired ipt, flutes, and RPM.</li>
+            <li>Read <strong>h<sub>eff</sub></strong>, the feed <strong>multiplier</strong>, and <strong>adjusted IPM</strong> in the big numbers.</li>
+            <li>Turn <strong>Compensate</strong> on for light radial cuts (ae well under half the tool diameter).</li>
+            <li>Tap <strong>Copy adjusted feed</strong> when you like the numbers.</li>
+          </ol>
+
+          <h3>How to read the diagram</h3>
+          <p><strong>Engagement diagram.</strong> The circle is your tool. The shaded wedge is radial engagement (ae) — how much of the diameter is in the cut. At light ae the chip gets thinner than the ipt you typed, so table feed has to go up to hold chip load. Thick→thin arrow = that effect. Flip <strong>Compensate</strong> when ae is well under half the tool diameter; the violet badge is your feed multiplier. Big numbers = rpm / ipm / adjusted feed — designed to read on a shop phone.</p>
+
+          <h3>DEMO costs only</h3>
+          <p class="help-demo"><strong>DEMO costs only.</strong> Blank $, burden rate, and scrap totals are sample numbers so you can see how scrap burns cash. They are not anyone’s real shop rates. Toggle the panel off if you only want the thinning math.</p>
+
+          <h3>What’s not in v1</h3>
+          <p class="help-later"><strong>What’s not in v1.</strong> This page is the radial chip thinning calculator (and optional DEMO cost panel). A Setup / PM due board and arrive-by timers are planned for a later tab — they’re not missing; they just aren’t shipped yet.</p>
+        </div>
+      </details>
+    </section>
+
     <!-- Hero diagram + primary outputs -->
     <section class="panel hero" aria-labelledby="diagram-heading">
       <div class="hero-copy">
