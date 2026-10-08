@@ -31,7 +31,7 @@ When **Compensate** is on: `mult = 1/factor`, adjusted chipload = ipt × mult, a
 Global toggle (session via `localStorage`). Scales length fields ×25.4 and rewrites labels. Angles, Z, RPM unchanged.
 
 ### DEMO cost panel (Stacey)
-Sample dollars only — not live job costs. Gold accents reserved for $ callouts.
+Sample dollars only — not real shop costs. Gold accents reserved for $ callouts.
 
 ### Not in this build
 Setup / PM board stays parked (Casey).
@@ -45,4 +45,4 @@ Setup / PM board stays parked (Casey).
 ## Caveats
 - Radial model is the common side-milling approximation — not a full CAM engagement sim.
 - Axial model uses sin(κ) lead-angle thinning — confirm against insert vendor data for high-feed tools.
-- Defaults are **demo** labels, not live job data.
+- Defaults are **demo** labels, sample data only.
