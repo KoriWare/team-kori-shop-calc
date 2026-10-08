@@ -22,10 +22,10 @@
   <meta name="apple-mobile-web-app-title" content="Chip Thinning" />
   <title>Chip Thinning Calculator · Team Kori</title>
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=cat2" />
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=cat2" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=cat2" />
-  <link rel="stylesheet" href="styles.css?v=cat2" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=cat3" />
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=cat3" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=cat3" />
+  <link rel="stylesheet" href="styles.css?v=cat3" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to calculator</a>
@@ -72,7 +72,7 @@
           <p>Side-milling / circular engagement. Factor = 2·√((ae/D)·(1−ae/D)) when ae/D &lt; 50%, else 1 (the chip reaches full ipt once the tool engages half its diameter). Example: 12.7% stepover gives a factor of 0.666, so feed × 1.50. Source: <a href="https://www.harveyperformance.com/in-the-loupe/combat-chip-thinning/" target="_blank" rel="noopener" style="color:inherit">Harvey Performance, Combat Chip Thinning</a> and HEM Guidebook p.20. Light ae thins the chip. Diagram: tool circle with shaded ae wedge.</p>
 
           <h3>Axial mode</h3>
-          <p>Lead / entering angle thinning. Factor = sin(κ). Inputs: Ø (for surface speed), ap (axial DOC), κ (presets or free), ipt, Z, RPM. Diagram: side-view depth + lead-angle geometry.</p>
+          <p>Lead / entering angle thinning. Factor = sin(κ). Inputs: Ø (for surface speed), ap (axial DOC), κ (presets or free), ipt, Z, RPM. Diagram: side-view depth + lead-angle geometry. Source: <a href="https://www.sandvik.coromant.com/en-us/knowledge/milling/entering-angle-and-chip-thickness" target="_blank" rel="noopener" style="color:inherit">Sandvik Coromant, Entering angle and chip thickness</a> (h<sub>ex</sub> = f<sub>z</sub> · sin(κ<sub>r</sub>) for straight-edge inserts).</p>
 
           <h3>Compensate</h3>
           <p><strong>Radial only.</strong> When ON, the calc multiplies table feed so programmed IPM puts <em>effective</em> chip thickness back to the ipt you typed — light side cuts thin the chip, so you feed faster to keep load. When OFF, you still see the thinning math, but programmed feed stays ipt × RPM × Z.</p>
@@ -437,7 +437,7 @@
   <footer class="site-footer">
     <p>Team Kori · Jenny (calc) · Maria (UI) · Stacey (demo $) · Casey (ops later)</p>
     <p class="fine">Static page · free GitHub Pages friendly · no accounts, no private data</p>
-    <p class="fine"><img src="cat-mark.svg?v=cat2" alt="" class="cat-mark" width="18" height="16">© 2026 KoriWare · All rights reserved</p>
+    <p class="fine"><img src="cat-mark.svg?v=cat3" alt="" class="cat-mark" width="18" height="16">© 2026 KoriWare · All rights reserved</p>
   </footer>
 
   <script src="app.js?v=ct1"></script>
