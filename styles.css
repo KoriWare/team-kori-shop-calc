@@ -864,6 +864,7 @@ input[type="range"]::-moz-range-thumb {
   margin: 0.25rem 0;
 }
 
+.cat-mark{height:1.25em;width:auto;vertical-align:-.25em;margin-right:6px}
 .fine {
   opacity: 0.75;
 }
