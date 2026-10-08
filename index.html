@@ -69,7 +69,7 @@
           </ol>
 
           <h3>Radial mode</h3>
-          <p>Side-milling / circular engagement. Factor = √((ae/D)·(2−ae/D)) when ae/D &lt; 1, else 1. Light ae thins the chip. Diagram: tool circle with shaded ae wedge.</p>
+          <p>Side-milling / circular engagement. Factor = 2·√((ae/D)·(1−ae/D)) when ae/D &lt; 50%, else 1 (the chip reaches full ipt once the tool engages half its diameter). Example: 12.7% stepover gives a factor of 0.666, so feed × 1.50. Source: <a href="https://www.harveyperformance.com/in-the-loupe/combat-chip-thinning/" target="_blank" rel="noopener" style="color:inherit">Harvey Performance, Combat Chip Thinning</a> and HEM Guidebook p.20. Light ae thins the chip. Diagram: tool circle with shaded ae wedge.</p>
 
           <h3>Axial mode</h3>
           <p>Lead / entering angle thinning. Factor = sin(κ). Inputs: Ø (for surface speed), ap (axial DOC), κ (presets or free), ipt, Z, RPM. Diagram: side-view depth + lead-angle geometry.</p>
@@ -440,6 +440,6 @@
     <p class="fine">© 2026 Team Kori · All rights reserved</p>
   </footer>
 
-  <script src="app.js?v=og1"></script>
+  <script src="app.js?v=ct1"></script>
 </body>
 </html>

@@ -105,9 +105,12 @@
 
   /** Radial factor */
   function radialFactor(ratio) {
-    if (ratio >= 1) return 1;
+    // Effective chip = ipt × sin(φ), engagement angle φ from cos φ = 1 − 2·ae/D.
+    // sin φ = 2·√((ae/D)(1 − ae/D)); at ae ≥ D/2 the chip reaches full ipt (factor 1).
+    // Harvey Performance HEM Guidebook p.20: IPTadj = CT·D / (2·√(D·RDOC − RDOC²)).
+    if (ratio >= 0.5) return 1;
     if (ratio <= 0) return 0;
-    return Math.sqrt(ratio * (2 - ratio));
+    return 2 * Math.sqrt(ratio * (1 - ratio));
   }
 
   /** Axial factor = sin(κ°) */
