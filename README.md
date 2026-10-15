@@ -46,3 +46,7 @@ Setup / PM board stays parked (Casey).
 - Radial model is the common side-milling approximation — not a full CAM engagement sim.
 - Axial model uses sin(κ) lead-angle thinning — confirm against insert vendor data for high-feed tools.
 - Defaults are **demo** labels, sample data only.
+
+## License
+
+Copyright (c) 2026 KoriWare. All rights reserved. No reuse is permitted; see [LICENSE](LICENSE).
